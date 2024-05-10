@@ -1,0 +1,42 @@
+{
+    "classes": [
+        {
+            "class": "MYDATA",
+            "description": "Knowledge about Airflow",
+            "vectorizer": "text2vec-openai",
+            "moduleConfig": {},
+            "properties": [
+                {
+                    "name": "title",
+                    "description": "Title of the knowledge base article",
+                    "dataType": [
+                        "text"
+                    ],
+                    "moduleConfig": {
+                        "text2vec-openai": {
+                            "skip": "False",
+                            "vectorizePropertyName": "False"
+                        }
+                    },
+                    "index_filterable": "True",
+                    "index_searchable": "True"
+                },
+                {
+                    "name": "text",
+                    "description": "Full text of the knowledge base article",
+                    "dataType": [
+                        "text"
+                    ],
+                    "moduleConfig": {
+                        "text2vec-openai": {
+                            "skip": "False",
+                            "vectorizePropertyName": "True"
+                        }
+                    },
+                    "index_filterable": "True",
+                    "index_searchable": "True"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,1 @@
+TEST weaviate is always green
