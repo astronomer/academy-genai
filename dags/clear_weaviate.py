@@ -31,7 +31,9 @@ default_args = {
 )
 def clear_weaviate():
 
-    @task
+    @task(
+        task_display_name="Delete all schemas in Weaviate",
+    )
     def delete_all_weaviate_schemas(class_to_delete=None):
         WeaviateHook(WEAVIATE_CONN_ID).get_conn().schema.delete_class(class_to_delete)
 

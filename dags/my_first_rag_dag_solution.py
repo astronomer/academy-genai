@@ -125,7 +125,7 @@ def my_first_rag_dag_solution():
         schema_json_path=_WEAVIATE_SCHEMA_PATH,
     )
 
-    schema_already_exists_obj = EmptyOperator(task_id="class_already_exists")
+    schema_already_exists_obj = EmptyOperator(task_id="class_already_exists")  # rename!
     ingest_documents_obj = EmptyOperator(
         task_id="ingest_documents", trigger_rule="none_failed"
     )
@@ -177,7 +177,6 @@ def my_first_rag_dag_solution():
             with open(file_path, "r", encoding="utf-8") as f:
                 texts.append(f.read())
 
-        print(titles)
 
         document_df = pd.DataFrame(
             {
@@ -264,7 +263,7 @@ def my_first_rag_dag_solution():
     ingest_data = WeaviateIngestOperator.partial(
         task_id="ingest_data",
         conn_id="weaviate_default",
-        class_name="DOCS",
+        class_name=_WEAVIATE_CLASS_NAME,
         map_index_template="Ingested files from: {{ task.input_data.to_dict()['folder_path'][0] }}.",
     ).expand(input_data=chunk_text_obj)
 

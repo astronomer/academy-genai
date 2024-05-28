@@ -4,7 +4,15 @@ import json
 from openai import OpenAI
 import os
 
-WEAVIATE_CLASS_NAME = "KB"
+WEAVIATE_CLASS_NAME = "MYDATA"
+
+
+def get_embedding(text):
+    model = "text-embedding-ada-002"
+    client = OpenAI()
+    embeddings = client.embeddings.create(input=[text], model=model).data
+
+    return [x.embedding for x in embeddings]
 
 
 def get_relevant_articles(reworded_prompt, limit=5, certainty=0.75):
@@ -20,21 +28,15 @@ def get_relevant_articles(reworded_prompt, limit=5, certainty=0.75):
 
     input_text = reworded_prompt
 
-    # nearVector = get_embedding(input_text)
-
     try:
-        publications = client.collections.get("MYDATA")
+        publications = client.collections.get(WEAVIATE_CLASS_NAME)
 
         response = publications.query.near_text(
             query=input_text,
-            distance=0.6,
+            distance=certainty,
             return_metadata=wvc.query.MetadataQuery(distance=True),
             limit=limit,
         )
-
-        for o in response.objects:
-            st.write(o.properties)
-            st.write(o.metadata)
 
     finally:
         client.close()
@@ -44,10 +46,11 @@ def get_relevant_articles(reworded_prompt, limit=5, certainty=0.75):
 
 def get_response(articles, query):
     prompt = """You are the helpful social post generator Astra! You will create an interesting factoid post 
-    about Airflow and the topic requested by the user:"""
+    about Apache Airflow and the topic requested by the user:"""
 
     for article in articles:
-        article_title = article["title"] if article["title"] else "unknown"
+        article = article.properties
+        article_title = article["folder_path"] if article["folder_path"] else "unknown"
 
         article_full_text = article["full_text"] if article["full_text"] else "no text"
 
@@ -63,7 +66,6 @@ def get_response(articles, query):
 
     client = OpenAI()
 
-
     champion_model_id = "gpt-3.5-turbo"
 
     chat_completion = client.chat.completions.create(
@@ -71,24 +73,6 @@ def get_response(articles, query):
     )
 
     return chat_completion
-
-
-def get_image(response_text):
-    from openai import OpenAI
-
-    client = OpenAI()
-
-    r = client.images.generate(
-        model="dall-e-3",
-        prompt="Create an image to go along with the following social media post:"
-        + response_text,
-        n=1,
-        size="1024x1024",
-    )
-
-    image_url = r.data[0].url
-
-    return image_url
 
 
 # Streamlit app code
@@ -117,25 +101,14 @@ if st.button("Generate post!"):
     with st.spinner(text="Thinking... :thinking_face:"):
         articles = get_relevant_articles(user_input, limit=limit, certainty=certainty)
         response = get_response(articles=articles, query=user_input)
-        st.session_state["response_text"] = response.choices[0].message.content
-        st.session_state["articles"] = articles
 
         st.success("Done! :smile:")
 
-if st.session_state["response_text"]:
-    st.write(st.session_state["response_text"])
+        st.write(response.choices[0].message.content)
 
-    if st.button("Generate picture"):
-        with st.spinner(text="Generating... :camera:"):
-            st.session_state["picture"] = get_image(st.session_state["response_text"])
+        st.header("Sources")
 
-if st.session_state["picture"]:
-    st.image(st.session_state["picture"], caption="DALLE-3 generated image")
-
-if st.session_state["response_text"]:
-    st.header("Sources")
-
-    for article in st.session_state["articles"]:
-        st.write(f"URI: {article['uri']}")
-        st.write(f"Chunk number: {article['chunk_index']}")
-        st.write("---")
+        for article in articles:
+            st.write(f"URI: {article.properties['uri']}")
+            st.write(f"Chunk number: {int(article.properties['chunk_index'])}")
+            st.write("---")
