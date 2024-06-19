@@ -24,10 +24,10 @@ default_args = {
 @dag(
     dag_display_name="🧼 Clear Weaviate",
     schedule=None,
-    start_date=datetime(2023, 10, 18),
+    start_date=datetime(2024, 6, 1),
     catchup=False,
     default_args=default_args,
-    tags=["helper", "use-case"],
+    tags=["ingest", "sales"],
 )
 def clear_weaviate():
 

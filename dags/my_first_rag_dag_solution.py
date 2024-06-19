@@ -13,7 +13,6 @@ from airflow.providers.weaviate.operators.weaviate import WeaviateIngestOperator
 from pendulum import datetime, duration
 import os
 import logging
-import json
 import pandas as pd
 
 t_log = logging.getLogger("airflow.task")
@@ -38,7 +37,7 @@ _CLASS_ALREADY_EXISTS_TASK_ID = "class_already_exists"
     max_consecutive_failed_dag_runs=5,
     tags=["RAG"],
     default_args={
-        # "retries": 3,
+        "retries": 3,
         "retry_delay": duration(minutes=5),
         "owner": "AI Task Force",
     },
@@ -71,15 +70,14 @@ def my_first_rag_dag_solution():
 
         # connect to Weaviate using the Airflow connection `conn_id`
         hook = WeaviateHook(conn_id)
-        client = hook.get_client()
 
         # retrieve the existing schema from the Weaviate instance
-        schema = client.schema.get()
+        schema = hook.get_schema()
         existing_classes = {cls["class"]: cls for cls in schema.get("classes", [])}
 
         # if the target class does not exist yet, we will need to create it
         if class_name not in existing_classes:
-            print(f"Class {class_name} does not exist yet.")
+            t_log.info(f"Class {class_name} does not exist yet.")
             return create_class_task_id
         # if the target class exists it does not need to be created
         else:
@@ -125,7 +123,7 @@ def my_first_rag_dag_solution():
         schema_json_path=_WEAVIATE_SCHEMA_PATH,
     )
 
-    schema_already_exists_obj = EmptyOperator(task_id="class_already_exists")  # rename!
+    class_already_exists = EmptyOperator(task_id=_CLASS_ALREADY_EXISTS_TASK_ID)  # rename!
     ingest_documents_obj = EmptyOperator(
         task_id="ingest_documents", trigger_rule="none_failed"
     )
@@ -273,7 +271,7 @@ def my_first_rag_dag_solution():
 
     chain(
         check_class_obj,
-        [create_class_obj, schema_already_exists_obj],
+        [create_class_obj, class_already_exists],
         ingest_documents_obj,
         fetch_ingestion_folders_local_paths_obj,
     )
