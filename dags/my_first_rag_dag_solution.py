@@ -123,10 +123,11 @@ def my_first_rag_dag_solution():
         schema_json_path=_WEAVIATE_SCHEMA_PATH,
     )
 
-    class_already_exists = EmptyOperator(task_id=_CLASS_ALREADY_EXISTS_TASK_ID)  # rename!
-    ingest_documents_obj = EmptyOperator(
-        task_id="ingest_documents", trigger_rule="none_failed"
+    class_already_exists = EmptyOperator(
+        task_id=_CLASS_ALREADY_EXISTS_TASK_ID
     )
+
+    weaviate_ready = EmptyOperator(task_id="weaviate_ready", trigger_rule="none_failed")
 
     # ----------------------- #
     # Ingest domain knowledge #
@@ -174,7 +175,6 @@ def my_first_rag_dag_solution():
 
             with open(file_path, "r", encoding="utf-8") as f:
                 texts.append(f.read())
-
 
         document_df = pd.DataFrame(
             {
@@ -249,13 +249,13 @@ def my_first_rag_dag_solution():
 
         context = get_current_context()
 
-        context["my_custom_map_index"] = (
-            f"Chunked files from: {df['folder_path'][0]}."
-        )
+        context["my_custom_map_index"] = f"Chunked files from: {df['folder_path'][0]}."
 
         return df
 
     chunk_text_obj = chunk_text.expand(df=extract_document_text_obj)
+
+
 
     # dynamically mapped task
     ingest_data = WeaviateIngestOperator.partial(
@@ -272,12 +272,11 @@ def my_first_rag_dag_solution():
     chain(
         check_class_obj,
         [create_class_obj, class_already_exists],
-        ingest_documents_obj,
-        fetch_ingestion_folders_local_paths_obj,
+        weaviate_ready
     )
 
     chain(
-        chunk_text_obj,
+        [chunk_text_obj, weaviate_ready],
         ingest_data,
     )
 
