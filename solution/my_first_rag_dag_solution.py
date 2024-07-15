@@ -46,17 +46,13 @@ _CLASS_ALREADY_EXISTS_TASK_ID = "class_already_exists"
 )
 def my_first_rag_dag_solution():
 
-    # ---------------------- #
-    # Set up Weaviate schema #
-    # ---------------------- #
-
-    @task.branch
+    @task.branch(retries=4)
     def check_class(
         conn_id: str,
         class_name: str,
         create_class_task_id: str,
         class_already_exists_task_id: str,
-    ) -> str:
+    ):
         """
         Check if the target class exists in the Weaviate schema.
         Args:
@@ -123,55 +119,47 @@ def my_first_rag_dag_solution():
         schema_json_path=_WEAVIATE_SCHEMA_PATH,
     )
 
-    class_already_exists = EmptyOperator(
-        task_id=_CLASS_ALREADY_EXISTS_TASK_ID
-    )
+    class_already_exists = EmptyOperator(task_id=_CLASS_ALREADY_EXISTS_TASK_ID)
 
     weaviate_ready = EmptyOperator(task_id="weaviate_ready", trigger_rule="none_failed")
 
-    # ----------------------- #
-    # Ingest domain knowledge #
-    # ----------------------- #
+    chain(check_class_obj, [create_class_obj, class_already_exists], weaviate_ready)
 
     @task
-    def fetch_ingestion_folders_local_paths(ingestion_folders_local_paths) -> list[str]:
-
+    def fetch_ingestion_folders_local_paths(ingestion_folders_local_path):
         # get all the folders in the given location
-        folders = os.listdir(ingestion_folders_local_paths)
+        folders = os.listdir(ingestion_folders_local_path)
 
         # return the full path of the folders
         return [
-            os.path.join(ingestion_folders_local_paths, folder) for folder in folders
+            os.path.join(ingestion_folders_local_path, folder) for folder in folders
         ]
 
     fetch_ingestion_folders_local_paths_obj = fetch_ingestion_folders_local_paths(
-        ingestion_folders_local_paths=_INGESTION_FOLDERS_LOCAL_PATHS
+        ingestion_folders_local_path=_INGESTION_FOLDERS_LOCAL_PATHS
     )
 
-    # dynamically mapped task
-    @task(map_index_template="{{ my_custom_map_index }}")
-    def extract_document_text(ingestion_folder_local_path: str) -> list[str]:
+    @task(
+        map_index_template="{{ my_custom_map_index }}",
+    )
+    def extract_document_text(ingestion_folder_local_path):
         """
         Extract information from markdown files in a folder.
         Args:
             folder_path (str): Path to the folder containing markdown files.
         Returns:
-            list[dict]: A list of dictionaries containing the extracted information.
+            pd.DataFrame: A list of dictionaries containing the extracted information.
         """
         files = [
             f for f in os.listdir(ingestion_folder_local_path) if f.endswith(".md")
         ]
 
-        uris = []
         titles = []
         texts = []
 
         for file in files:
             file_path = os.path.join(ingestion_folder_local_path, file)
-
-            uris.append(file_path)
             titles.append(file.split(".")[0])
-            timestamp = os.path.getmtime(file_path)
 
             with open(file_path, "r", encoding="utf-8") as f:
                 texts.append(f.read())
@@ -179,15 +167,10 @@ def my_first_rag_dag_solution():
         document_df = pd.DataFrame(
             {
                 "folder_path": ingestion_folder_local_path,
-                "uri": uris,
                 "title": titles,
-                "timestamp": timestamp,
-                "full_text": texts,
-                "type": "text/markdown",
+                "text": texts,
             }
         )
-
-        document_df["timestamp"] = document_df["timestamp"].astype(str)
 
         t_log.info(f"Number of records: {document_df.shape[0]}")
 
@@ -205,11 +188,8 @@ def my_first_rag_dag_solution():
         ingestion_folder_local_path=fetch_ingestion_folders_local_paths_obj
     )
 
-    # dynamically mapped task
-    @task(
-        map_index_template="{{ my_custom_map_index }}",
-    )
-    def chunk_text(df: pd.DataFrame) -> pd.DataFrame:
+    @task(map_index_template="{{ my_custom_map_index }}")
+    def chunk_text(df):
         """
         Chunk the text in the DataFrame.
         Args:
@@ -218,29 +198,18 @@ def my_first_rag_dag_solution():
             pd.DataFrame: The DataFrame with the text chunked.
         """
 
-        from langchain.schema import Document
         from langchain.text_splitter import RecursiveCharacterTextSplitter
+        from langchain.schema import Document
 
         splitter = RecursiveCharacterTextSplitter()
 
-        df["chunks"] = df["full_text"].apply(
+        df["chunks"] = df["text"].apply(
             lambda x: splitter.split_documents([Document(page_content=x)])
         )
 
         df = df.explode("chunks", ignore_index=True)
         df.dropna(subset=["chunks"], inplace=True)
-        df["full_text"] = df["chunks"].apply(lambda x: x.page_content)
-
-        for document in df["uri"].unique():
-            chunks_per_doc = 0
-            for i, chunk in enumerate(df.loc[df["uri"] == document, "chunks"]):
-                print(f"Document: {document}, Chunk: {i}")
-                df.loc[df["chunks"] == chunk, "chunk_index"] = i
-                chunks_per_doc += 1
-            df["chunks_per_doc"] = chunks_per_doc
-
-        df["chunk_index"] = df["chunk_index"].astype(int)
-        df["chunks_per_doc"] = df["chunks_per_doc"].astype(int)
+        df["text"] = df["chunks"].apply(lambda x: x.page_content)
         df.drop(["chunks"], inplace=True, axis=1)
         df.reset_index(inplace=True, drop=True)
 
@@ -249,31 +218,20 @@ def my_first_rag_dag_solution():
 
         context = get_current_context()
 
-        context["my_custom_map_index"] = f"Chunked files from: {df['folder_path'][0]}."
+        context["my_custom_map_index"] = (
+            f"Chunked files from a df of length: {len(df)}."
+        )
 
         return df
 
     chunk_text_obj = chunk_text.expand(df=extract_document_text_obj)
 
-
-
-    # dynamically mapped task
     ingest_data = WeaviateIngestOperator.partial(
         task_id="ingest_data",
-        conn_id="weaviate_default",
+        conn_id=_WEAVIATE_CONN_ID,
         class_name=_WEAVIATE_CLASS_NAME,
         map_index_template="Ingested files from: {{ task.input_data.to_dict()['folder_path'][0] }}.",
     ).expand(input_data=chunk_text_obj)
-
-    # ---------------- #
-    # Set dependencies #
-    # ---------------- #
-
-    chain(
-        check_class_obj,
-        [create_class_obj, class_already_exists],
-        weaviate_ready
-    )
 
     chain(
         [chunk_text_obj, weaviate_ready],

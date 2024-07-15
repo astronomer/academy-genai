@@ -1,10 +1,11 @@
 """
-## Create a schema in Weaviate
+## Delete a class in Weaviate
 
-CAUTION: This DAG will delete all schemas in Weaviate in your Weaviate instance. Please use it with caution.
+CAUTION: This DAG will delete a specified class in your Weaviate instance.
+Meant to be used during development to reset Weaviate.
+Please use it with caution.
 """
 
-from datetime import datetime
 from airflow.providers.weaviate.hooks.weaviate import WeaviateHook
 from airflow.decorators import dag, task
 import os
@@ -12,27 +13,21 @@ import os
 # Provider your Weaviate conn_id here.
 WEAVIATE_CONN_ID = os.getenv("WEAVIATE_CONN_ID", "weaviate_default")
 # Provide the class name to delete the schema.
-WEAVIATE_CLASS_TO_DELETE = os.getenv("WEAVIATE_CLASS_NAME")
-
-
-default_args = {
-    "retries": 0,
-    "owner": "DE Team",
-}
+WEAVIATE_CLASS_TO_DELETE = "MY_SCHEMA_TO_DELETE"
 
 
 @dag(
-    dag_display_name="🧼 Clear Weaviate",
+    dag_display_name="🧼 Delete a Schema in Weaviate",
     schedule=None,
-    start_date=datetime(2024, 6, 1),
+    start_date=None,
     catchup=False,
-    default_args=default_args,
-    tags=["ingest", "sales"],
+    description="CAUTION! Will delete a class in Weaviate!",
+    tags=["helper"]
 )
 def clear_weaviate():
 
     @task(
-        task_display_name="Delete all schemas in Weaviate",
+        task_display_name=f"Delete {WEAVIATE_CLASS_TO_DELETE} in Weaviate",
     )
     def delete_all_weaviate_schemas(class_to_delete=None):
         WeaviateHook(WEAVIATE_CONN_ID).get_conn().schema.delete_class(class_to_delete)
