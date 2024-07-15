@@ -46,25 +46,25 @@ This command will spin up 6 Docker containers on your machine, 4 for different A
 
 ### Airflow and AI/ML resources
 
-[Best practices for orchestrating MLOps pipelines with Airflow Learn guide](https://www.astronomer.io/docs/learn/airflow-mlops)
-[Gen AI Cookbook (reference architecture diagrams)](https://www.astronomer.io/ebooks/gen-ai-airflow-cookbook/)
-[Ask Astro source code](https://github.com/astronomer/ask-astro)
-[Advanced content generation pipeline](https://github.com/astronomer/gen-ai-fine-tune-rag-use-case)
+- [Best practices for orchestrating MLOps pipelines with Airflow Learn guide](https://www.astronomer.io/docs/learn/airflow-mlops)
+- [Gen AI Cookbook (reference architecture diagrams)](https://www.astronomer.io/ebooks/gen-ai-airflow-cookbook/)
+- [Ask Astro source code](https://github.com/astronomer/ask-astro)
+- [Advanced content generation pipeline](https://github.com/astronomer/gen-ai-fine-tune-rag-use-case)
 
-[DAG-level parameters Learn guide](https://www.astronomer.io/docs/learn/airflow-dag-parameters)
-[Taskflow API module](https://academy.astronomer.io/astro-runtime-taskflow) + [Introduction to the TaskFlow API and Airflow decorators Learn guide](https://www.astronomer.io/docs/learn/airflow-decorators)
-[Orchestrate Weaviate operations with Apache Airflow tutorial](https://www.astronomer.io/docs/learn/airflow-weaviate)
-[Airflow: Branching module](https://academy.astronomer.io/astro-runtime-branching) + [Branching in Airflow Learn guide](https://www.astronomer.io/docs/learn/airflow-branch-operator)
-[Airflow: Dynamic Task Mapping module](https://academy.astronomer.io/astro-runtime-dynamic-task-mapping) + [Create dynamic Airflow tasks Learn guide](https://www.astronomer.io/docs/learn/dynamic-tasks)
+- [DAG-level parameters Learn guide](https://www.astronomer.io/docs/learn/airflow-dag-parameters)
+- [Taskflow API module](https://academy.astronomer.io/astro-runtime-taskflow) + [Introduction to the TaskFlow API and Airflow decorators Learn guide](https://www.astronomer.io/docs/learn/airflow-decorators)
+- [Orchestrate Weaviate operations with Apache Airflow tutorial](https://www.astronomer.io/docs/learn/airflow-weaviate)
+- [Airflow: Branching module](https://academy.astronomer.io/astro-runtime-branching) + [Branching in Airflow Learn guide](https://www.astronomer.io/docs/learn/airflow-branch-operator)
+- [Airflow: Dynamic Task Mapping module](https://academy.astronomer.io/astro-runtime-dynamic-task-mapping) + [Create dynamic Airflow tasks Learn guide](https://www.astronomer.io/docs/learn/dynamic-tasks)
 
 ### Documentation for the tools used:
 
-[Apache Airflow Learn Docs](https://www.astronomer.io/docs/learn)
-[Apache Airflow official documentation](https://airflow.apache.org/docs/apache-airflow/stable/index.html)
-[Astro CLI to run Airflow locally in Docker](https://www.astronomer.io/docs/astro/cli/overview)
-[Weaviate](https://weaviate.io/developers/weaviate)
-[Airflow Weaviate provider](https://airflow.apache.org/docs/apache-airflow-providers-weaviate/stable/index.html)
-[Streamlit](https://docs.streamlit.io/)
-[LangChain](https://python.langchain.com/v0.2/docs/introduction/)
-[pandas](https://pandas.pydata.org/docs/)
-[OpenAI](https://platform.openai.com/docs/introduction)
+- [Apache Airflow Learn Docs](https://www.astronomer.io/docs/learn)
+- [Apache Airflow official documentation](https://airflow.apache.org/docs/apache-airflow/stable/index.html)
+- [Astro CLI to run Airflow locally in Docker](https://www.astronomer.io/docs/astro/cli/overview)
+- [Weaviate](https://weaviate.io/developers/weaviate)
+- [Airflow Weaviate provider](https://airflow.apache.org/docs/apache-airflow-providers-weaviate/stable/index.html)
+- [Streamlit](https://docs.streamlit.io/)
+- [LangChain](https://python.langchain.com/v0.2/docs/introduction/)
+- [pandas](https://pandas.pydata.org/docs/)
+- [OpenAI](https://platform.openai.com/docs/introduction)
