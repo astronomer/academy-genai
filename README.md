@@ -56,15 +56,16 @@ This command will spin up 6 Docker containers on your machine, 4 for different A
   - [Branching in Airflow](https://www.astronomer.io/docs/learn/airflow-branch-operator)
   - [Create dynamic Airflow tasks](https://www.astronomer.io/docs/learn/dynamic-tasks)
   - [Orchestrate Weaviate operations with Apache Airflow](https://www.astronomer.io/docs/learn/airflow-weaviate)
-- [Gen AI Cookbook](https://www.astronomer.io/ebooks/gen-ai-airflow-cookbook/)(Reference Architecture Diagrams)
-- [Ask Astro](https://github.com/astronomer/ask-astro)
-- [Advanced Content Generation Pipeline Repo](https://github.com/astronomer/gen-ai-fine-tune-rag-use-case)
+- Other:
+  - [Gen AI Cookbook](https://www.astronomer.io/ebooks/gen-ai-airflow-cookbook/) (Reference Architecture Diagrams)
+  - [Ask Astro](https://github.com/astronomer/ask-astro)
+  - [Advanced Content Generation Pipeline GitHub Repository](https://github.com/astronomer/gen-ai-fine-tune-rag-use-case)
 
 ### Documentation for the tools used:
 
 - [Astronomer Airflow Learn Docs](https://www.astronomer.io/docs/learn)
 - [Apache Airflow Official Documentation](https://airflow.apache.org/docs/apache-airflow/stable/index.html)
-- [Astro CLI to run Airflow locally in Docker](https://www.astronomer.io/docs/astro/cli/overview)
+- [Astro CLI](https://www.astronomer.io/docs/astro/cli/overview)
 - [Weaviate](https://weaviate.io/developers/weaviate)
 - [Airflow Weaviate Provider](https://airflow.apache.org/docs/apache-airflow-providers-weaviate/stable/index.html)
 - [Streamlit](https://docs.streamlit.io/)
