@@ -2,20 +2,20 @@
 
 Welcome! :rocket:
 
-This repository contains the code to be used in the Introduction to GenAI with [Apache Airflow®](https://airflow.apache.org/) [Astronomer Academy module](https://academy.astronomer.io/).
+This repository contains the code to be used in the Introduction to GenAI with [Apache Airflow®](https://airflow.apache.org/) [Astronomer Academy module](https://academy.astronomer.io/introduction-to-genai-with-apache-airflow).
 
 ## Academy Module Contents
 
 In the Introduction to GenAI with Airflow module, you will learn everything you need to create your first retrieval augmented generation (RAG) application with Airflow. 
 
-We will begin by introducing Generative AI (GenAI): what it is and why do you want to use Airflow to power GenAI applications. Next, we will introduce the module project, a content generation application using a Streamlit frontend that creates custom text based on your own data, made available with an Airflow pipeline consisting of one DAG ingesting text into a Weaviate vector database.
+We will begin by introducing Generative AI (GenAI): what it is and how Airflow helps power GenAI applications. Next, we will cover the module project, a content generation application using a [Streamlit](https://streamlit.io/) frontend that creates custom text based on local data. The application's data will be made available using an Airflow pipeline consisting of one DAG that ingests local files, chunks the text using [LangChain](https://www.langchain.com/), embeds it using [OpenAI](https://openai.com/), and stores it into a [Weaviate](https://weaviate.io/) vector database.
 
 After covering the basics and explaining the Airflow DAG powering the RAG application, you will clone a GitHub repository with a pre-built Airflow environment in which we will build the DAG step-by-step. While building the DAG you will learn about key Airflow features such as the TaskFlow API, advanced DAG parameters, Airflow branching and dynamic task mapping.
 
 Finally, we conclude by adapting the application for your personal use case and explore a real-world application similar RAG DAGs: [AskAstro](https://ask.astronomer.io/); a chat-bot with advanced knowledge about Airflow and Astronomer.
 
 > [!NOTE]
-> The fully finished DAG can be found in the `solutions` folder, if you are in a hurry :)
+> The fully finished DAG can be found in the `solutions` folder, if you are in a hurry!
 
 ## How to use this repository
 
@@ -45,25 +45,28 @@ This command will spin up 6 Docker containers on your machine, 4 for different A
 ## Resources
 
 ### Airflow and AI/ML resources
-
-- [Best practices for orchestrating MLOps pipelines with Airflow Learn guide](https://www.astronomer.io/docs/learn/airflow-mlops)
-- [Gen AI Cookbook (reference architecture diagrams)](https://www.astronomer.io/ebooks/gen-ai-airflow-cookbook/)
-- [Ask Astro source code](https://github.com/astronomer/ask-astro)
-- [Advanced content generation pipeline](https://github.com/astronomer/gen-ai-fine-tune-rag-use-case)
-
-- [DAG-level parameters Learn guide](https://www.astronomer.io/docs/learn/airflow-dag-parameters)
-- [Taskflow API module](https://academy.astronomer.io/astro-runtime-taskflow) + [Introduction to the TaskFlow API and Airflow decorators Learn guide](https://www.astronomer.io/docs/learn/airflow-decorators)
-- [Orchestrate Weaviate operations with Apache Airflow tutorial](https://www.astronomer.io/docs/learn/airflow-weaviate)
-- [Airflow: Branching module](https://academy.astronomer.io/astro-runtime-branching) + [Branching in Airflow Learn guide](https://www.astronomer.io/docs/learn/airflow-branch-operator)
-- [Airflow: Dynamic Task Mapping module](https://academy.astronomer.io/astro-runtime-dynamic-task-mapping) + [Create dynamic Airflow tasks Learn guide](https://www.astronomer.io/docs/learn/dynamic-tasks)
+- Academy: 
+  - [Taskflow API Module](https://academy.astronomer.io/astro-runtime-taskflow)
+  - [Airflow: Branching Module](https://academy.astronomer.io/astro-runtime-branching)
+  - [Airflow: Dynamic Task Mapping Module](https://academy.astronomer.io/astro-runtime-dynamic-task-mapping)
+- Learn Guides & Tutorials:
+  - [Best practices for orchestrating MLOps pipelines with Airflow](https://www.astronomer.io/docs/learn/airflow-mlops)
+  - [DAG-level parameters](https://www.astronomer.io/docs/learn/airflow-dag-parameters)
+  - [Introduction to the TaskFlow API and Airflow decorators](https://www.astronomer.io/docs/learn/airflow-decorators)
+  - [Branching in Airflow](https://www.astronomer.io/docs/learn/airflow-branch-operator)
+  - [Create dynamic Airflow tasks](https://www.astronomer.io/docs/learn/dynamic-tasks)
+  - [Orchestrate Weaviate operations with Apache Airflow](https://www.astronomer.io/docs/learn/airflow-weaviate)
+- [Gen AI Cookbook](https://www.astronomer.io/ebooks/gen-ai-airflow-cookbook/)(Reference Architecture Diagrams)
+- [Ask Astro](https://github.com/astronomer/ask-astro)
+- [Advanced Content Generation Pipeline Repo](https://github.com/astronomer/gen-ai-fine-tune-rag-use-case)
 
 ### Documentation for the tools used:
 
-- [Apache Airflow Learn Docs](https://www.astronomer.io/docs/learn)
-- [Apache Airflow official documentation](https://airflow.apache.org/docs/apache-airflow/stable/index.html)
+- [Astronomer Airflow Learn Docs](https://www.astronomer.io/docs/learn)
+- [Apache Airflow Official Documentation](https://airflow.apache.org/docs/apache-airflow/stable/index.html)
 - [Astro CLI to run Airflow locally in Docker](https://www.astronomer.io/docs/astro/cli/overview)
 - [Weaviate](https://weaviate.io/developers/weaviate)
-- [Airflow Weaviate provider](https://airflow.apache.org/docs/apache-airflow-providers-weaviate/stable/index.html)
+- [Airflow Weaviate Provider](https://airflow.apache.org/docs/apache-airflow-providers-weaviate/stable/index.html)
 - [Streamlit](https://docs.streamlit.io/)
 - [LangChain](https://python.langchain.com/v0.2/docs/introduction/)
 - [pandas](https://pandas.pydata.org/docs/)
